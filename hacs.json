@@ -3,11 +3,6 @@
   "filename": "dhl-tracker-card.js",
   "type": "plugin",
   "render_readme": true,
-  "description": "A Home Assistant Lovelace card for tracking DHL packages via the dhl_tracker integration.",
-  "authors": ["@nk-designz"],
-  "branding": {
-    "logo": "https://www.dhl.com/etc.clientlibs/dhl/clientlibs/clientlib-base/resources/img/dhl-logo.svg",
-    "background": "#ffcc00",
-    "brand_color": "#ba0c2f"
-  }
+  "description": "A Home Assistant Lovelace card to display and manage DHL package tracking.",
+  "authors": ["@nk-designz"]
 }
