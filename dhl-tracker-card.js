@@ -46,7 +46,7 @@ class DHLTrackerCard extends HTMLElement {
       <ha-card header="DHL Tracker">
         <div class="card-content">
           <div class="header-row">
-            <mwc-textfield id="trackingInput" label="Tracking ID" outlined></mwc-textfield>
+            <mwc-textfield id="trackingInput" label="Tracking ID" outlined value=""></mwc-textfield>
             <mwc-button raised id="addButton" label="Add"></mwc-button>
           </div>
     `;
@@ -78,7 +78,7 @@ class DHLTrackerCard extends HTMLElement {
             <mwc-button
               class="remove-btn"
               data-id="${data.tracking_id}"
-              icon="delete"
+              
               label="Remove"
               outlined
             ></mwc-button>
