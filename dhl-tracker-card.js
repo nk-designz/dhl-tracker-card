@@ -1,76 +1,84 @@
 class DHLTrackerCard extends HTMLElement {
   set hass(hass) {
-    const config = this._config;
+    if (!this._config) return;
+
     const root = this.shadowRoot;
 
     if (!this.content) {
       this.content = document.createElement("div");
-      this.content.style.padding = "16px";
       root.appendChild(this.content);
-
-      // Input field for adding new tracking ID
-      const input = document.createElement("input");
-      input.type = "text";
-      input.placeholder = "Enter tracking ID";
-      input.id = "trackingInput";
-      input.style.marginRight = "8px";
-
-      const addButton = document.createElement("button");
-      addButton.innerText = "Add";
-      addButton.onclick = () => {
-        const value = this.shadowRoot.getElementById("trackingInput").value;
-        if (value) {
-          hass.callService("dhl_tracker", "add_tracking_id", {
-            tracking_id: value
-          });
-        }
-      };
-
-      this.content.appendChild(input);
-      this.content.appendChild(addButton);
     }
 
     const entities = Object.values(hass.states).filter(
       (state) => state.entity_id.startsWith("sensor.dhl_package_")
     );
 
-    if (entities.length === 0) {
-      this.content.innerHTML += `<ha-card><div class="card-content">No DHL tracking entities found.</div></ha-card>`;
-      return;
-    }
-
+    // Build card HTML
     let html = `
       <ha-card header="DHL Tracker">
         <div class="card-content">
+          <input id="trackingInput" placeholder="Enter tracking ID" style="margin-right:8px;" />
+          <button id="addButton">Add</button>
+          <hr />
     `;
 
-    for (const entity of entities) {
-      const data = entity.attributes;
-      html += `
-        <div style="margin-bottom: 1em; padding-bottom: 1em; border-bottom: 1px solid #ccc;">
-          <strong>Tracking ID:</strong> ${data.tracking_id || entity.entity_id}<br>
-          <strong>Status:</strong> ${entity.state}<br>
-          <strong>Description:</strong> ${data.description || "-"}<br>
-          <strong>From:</strong> ${data.origin || "-"}<br>
-          <strong>To:</strong> ${data.destination || "-"}<br>
-          <strong>ETA:</strong> ${data.estimated_delivery || "-"}<br>
-          <strong>Last Updated:</strong> ${data.last_updated || "-"}<br>
-          <a href="${data.url}" target="_blank">Track on DHL.de</a><br>
-          <button onclick='
-            const id = "${data.tracking_id}";
-            if (id) {
-              hass.callService("dhl_tracker", "remove_tracking_id", {
-                tracking_id: id
-              });
-            }
-          '>Remove</button>
-        </div>
-      `;
+    if (entities.length === 0) {
+      html += `<p>No DHL tracking entities found.</p>`;
+    } else {
+      for (const entity of entities) {
+        const data = entity.attributes;
+        html += `
+          <div style="margin-bottom: 1em; padding-bottom: 1em; border-bottom: 1px solid #ccc;">
+            <strong>Tracking ID:</strong> ${data.tracking_id || entity.entity_id}<br>
+            <strong>Status:</strong> ${entity.state}<br>
+            <strong>Description:</strong> ${data.description || "-"}<br>
+            <strong>From:</strong> ${data.origin || "-"}<br>
+            <strong>To:</strong> ${data.destination || "-"}<br>
+            <strong>ETA:</strong> ${data.estimated_delivery || "-"}<br>
+            <strong>Last Updated:</strong> ${data.last_updated || "-"}<br>
+            <a href="${data.url}" target="_blank">Track on DHL.de</a><br>
+            <button data-id="${data.tracking_id}" class="remove-btn">Remove</button>
+          </div>
+        `;
+      }
     }
 
-    html += `</div></ha-card>`;
-    this.content.innerHTML += html;
+    html += `
+        </div>
+      </ha-card>
+    `;
+
+    this.content.innerHTML = html;
+
+    // Event listeners for add/remove
+    const input = this.shadowRoot.getElementById("trackingInput");
+    const addButton = this.shadowRoot.getElementById("addButton");
+
+    if (addButton) {
+      addButton.onclick = () => {
+        const value = input?.value;
+        if (value) {
+          hass.callService("dhl_tracker", "add_tracking_id", {
+            tracking_id: value
+          });
+          input.value = "";
+        }
+      };
+    }
+
+    const removeButtons = this.shadowRoot.querySelectorAll(".remove-btn");
+    removeButtons.forEach((btn) => {
+      btn.onclick = () => {
+        const id = btn.dataset.id;
+        if (id) {
+          hass.callService("dhl_tracker", "remove_tracking_id", {
+            tracking_id: id
+          });
+        }
+      };
+    });
   }
+
 
   setConfig(config) {
     this._config = config || {};
