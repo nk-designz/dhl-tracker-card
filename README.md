@@ -2,8 +2,6 @@
 
 A custom Lovelace card for Home Assistant that displays all active DHL package tracking sensors from the [dhl_tracker](https://github.com/nk-designz/home-assistant-dhl-tracker) integration.
 
-![screenshot](https://user-images.githubusercontent.com/.../dhl-tracker-preview.png)
-
 ## Installation (via HACS)
 
 1. Add this repo to HACS as a custom repository (type: plugin).
