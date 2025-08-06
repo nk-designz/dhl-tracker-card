@@ -9,30 +9,29 @@ class DHLTrackerCard extends HTMLElement {
       style.textContent = `
         mwc-textfield {
           margin-right: 8px;
+          width: 100%;
           --mdc-theme-primary: var(--primary-color);
+        }
+        .card-content {
+          display: flex;
+          flex-direction: column;
+        }
+        .header-row {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 16px;
         }
         .package-entry {
           margin-bottom: 1em;
           padding-bottom: 1em;
           border-bottom: 1px solid var(--divider-color);
         }
+        .package-entry:last-child {
+          border-bottom: none;
+        }
         .remove-btn {
-          --mdc-theme-primary: var(--error-color);
-        }
-        ha-icon {
-          margin-right: 4px;
-        }
-        .status {
-          display: flex;
-          align-items: center;
-          font-weight: bold;
-          margin: 4px 0;
-        }
-        .header-row {
-          display: flex;
-          gap: 8px;
-          margin-bottom: 12px;
-          align-items: center;
+          margin-top: 8px;
+          align-self: flex-start;
         }
       `;
       root.appendChild(style);
@@ -48,7 +47,7 @@ class DHLTrackerCard extends HTMLElement {
         <div class="card-content">
           <div class="header-row">
             <mwc-textfield id="trackingInput" label="Tracking ID" outlined></mwc-textfield>
-            <mwc-button raised id="addButton" icon="mdi:plus" label="Add"></mwc-button>
+            <mwc-button raised id="addButton" label="Add"></mwc-button>
           </div>
     `;
 
@@ -57,35 +56,29 @@ class DHLTrackerCard extends HTMLElement {
     } else {
       for (const entity of entities) {
         const data = entity.attributes;
+        const status = entity.state || "unknown";
+
         html += `
           <div class="package-entry">
-            <div class="status">
-              <ha-icon icon="mdi:package-variant"></ha-icon>
-              Tracking ID: ${data.tracking_id || entity.entity_id}
-            </div>
-            <div class="status">
-              <ha-icon icon="mdi:truck"></ha-icon>
-              Status: ${entity.state} — ${data.description || "-"}
-            </div>
-            <div class="status">
-              <ha-icon icon="mdi:map-marker"></ha-icon>
-              From: ${data.origin || "-"} → ${data.destination || "-"}
-            </div>
-            <div class="status">
-              <ha-icon icon="mdi:calendar-clock"></ha-icon>
-              ETA: ${data.estimated_delivery || "-"}
-            </div>
-            <div class="status">
-              <ha-icon icon="mdi:update"></ha-icon>
-              Last Updated: ${data.last_updated || "-"}
-            </div>
-            <a href="${data.url}" target="_blank">
-              <ha-icon icon="mdi:link"></ha-icon>Track on DHL.de
-            </a><br>
+            <div><strong>Tracking ID:</strong> ${data.tracking_id || entity.entity_id}</div>
+            <div><strong>Status:</strong> ${status}</div>
+        `;
+
+        if (status !== "unavailable" && status !== "unknown") {
+          html += `
+            <div><strong>Description:</strong> ${data.description || "-"}</div>
+            <div><strong>From:</strong> ${data.origin || "-"}</div>
+            <div><strong>To:</strong> ${data.destination || "-"}</div>
+            <div><strong>ETA:</strong> ${data.estimated_delivery || "-"}</div>
+            <div><strong>Last Updated:</strong> ${data.last_updated || "-"}</div>
+          `;
+        }
+
+        html += `
             <mwc-button
               class="remove-btn"
               data-id="${data.tracking_id}"
-              icon="mdi:delete"
+              icon="delete"
               label="Remove"
               outlined
             ></mwc-button>
