@@ -7,9 +7,16 @@ class DHLTrackerCard extends HTMLElement {
       this.content = document.createElement("div");
       const style = document.createElement("style");
       style.textContent = `
-        mwc-textfield {
-          margin-right: 8px;
-          width: 100%;
+        input#trackingInput {
+          flex: 1;
+          padding: 8px;
+          font-size: 1em;
+          border: 1px solid var(--divider-color);
+          border-radius: var(--ha-card-border-radius);
+          background-color: var(--card-background-color);
+          color: var(--primary-text-color);
+        }
+        mwc-button {
           --mdc-theme-primary: var(--primary-color);
         }
         .card-content {
@@ -46,7 +53,7 @@ class DHLTrackerCard extends HTMLElement {
       <ha-card header="DHL Tracker">
         <div class="card-content">
           <div class="header-row">
-            <mwc-textfield id="trackingInput" label="Tracking ID" outlined value=""></mwc-textfield>
+            <input type="text" id="trackingInput" placeholder="Tracking ID"></mwc-textfield>
             <mwc-button raised id="addButton" label="Add"></mwc-button>
           </div>
     `;
