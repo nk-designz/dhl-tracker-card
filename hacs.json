@@ -4,5 +4,6 @@
   "type": "plugin",
   "render_readme": true,
   "description": "A Home Assistant Lovelace card to display and manage DHL package tracking.",
-  "authors": ["@nk-designz"]
+  "authors": ["@nk-designz"],
+  "logo": "images/logo.png"
 }
